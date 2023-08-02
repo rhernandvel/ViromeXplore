@@ -179,16 +179,14 @@ workflow qc_classify {
 
     //Run programs
       vQC_ch = viromeQC(illumina_input_ch).view()
-      //kaiju_ch=kaiju(illumina_input_ch, kaiju_db).view()
-      //krona_ch=krona(kaiju_ch).view()
+      kaiju_ch=kaiju(illumina_input_ch, kaiju_db).view()
+      krona_ch=krona(kaiju_ch).view()
 
 
     emit:
         kaiju_db
-        //kaiju_ch
-        //krona_ch
-
-
+        kaiju_ch
+        krona_ch
         vQC_ch
 }
 
