@@ -7,11 +7,12 @@ process viromeQC {
     tuple val (name), file(illumina_input_ch)
 
     output:
-    tuple val (name), file("report_file.txt")
+    tuple val (name), path("${params.viromeQC_out}"), file("${params.viromeQC_out}/report_file.txt")
 
     script:
     """    
-    viromeQC.py -i ${illumina_input_ch} -o report_file.txt --bowtie2_threads ${task.cpus} --diamond_threads ${task.cpus} -w ${params.samp_type}
+    mkdir ${params.viromeQC_out}
+    viromeQC.py -i ${illumina_input_ch} -o ${params.viromeQC_out}/report_file.txt --bowtie2_threads ${task.cpus} --diamond_threads ${task.cpus} -w ${params.samp_type}
     """
 
 }
