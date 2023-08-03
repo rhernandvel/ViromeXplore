@@ -9,15 +9,16 @@ def helpMessage() {
         Usage:
         Run the workflow as follows:
 
-        nextflow run viromics.nf --pipeline "valid_pipeline_name" --fasta/illumina file.fasta/file(s).fq 
+        nextflow run viromics.nf --pipeline "valid_pipeline_name" --fasta/illumina 'file.fasta/file(s).fq' 
 
         Mandatory arguments:
-         --pipeline                     Valid pipeline name [find_viruses/qc_classify]
-         --fasta/illumina               Contigs file in FASTA format / Illumina reads FASTQ format
+         --pipeline                     Valid pipeline name                                                     [find_viruses/qc_classify]
+         --fasta/illumina               Contigs file in FASTA format / Illumina reads FASTQ format              ['file.fasta'/'basename_{1,2}.fastq']
 
         Optional arguments:
-         --cpus                         Number of CPUs to use during job [default : all available]
-         --memory                       Memory in GB to be asigned for the job [default : 12 GB]
+         --result_dir                   Name of directory where the results from all analyses will be written.  [default : results]
+         --cpus                         Number of CPUs to use during job                                        [default : all available]
+         --memory                       Memory in GB to be asigned for the job                                  [default : 12 GB]
          --help                         Help statement.
         
         Pipelines:
@@ -171,7 +172,7 @@ workflow qc_classify {
     //..................
     //..Illumina input..
     //...................
-      illumina_input_ch = Channel.fromPath(params.illumina, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
+      illumina_input_ch = Channel.fromFilePairs(params.illumina, checkIfExists: true).view()
     
     //Download databases
       if (params.kaijudb) { kaiju_db = file(params.kaijudb) } 

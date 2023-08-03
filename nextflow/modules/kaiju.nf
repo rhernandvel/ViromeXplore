@@ -13,7 +13,7 @@ process kaiju {
 
     script:
     """    
-    kaiju -z ${task.cpus} -t ${database}/nodes.dmp -f ${database}/kaiju_db_viruses.fmi -v -i ${illumina_input_ch} -o ${name}.out
+    kaiju -z ${task.cpus} -t ${database}/nodes.dmp -f ${database}/kaiju_db_viruses.fmi -v -i ${illumina_input_ch[0]} -j ${illumina_input_ch[0]} -o ${name}.out
     kaiju2krona -t ${database}/nodes.dmp -n ${database}/names.dmp -i ${name}.out -o ${name}.out.krona
     """
 }

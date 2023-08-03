@@ -12,7 +12,7 @@ process viromeQC {
     script:
     """    
     mkdir ${params.viromeQC_out}
-    viromeQC.py -i ${illumina_input_ch} -o ${params.viromeQC_out}/report_file.txt --bowtie2_threads ${task.cpus} --diamond_threads ${task.cpus} -w ${params.samp_type}
+    viromeQC.py -i ${illumina_input_ch[0]} ${illumina_input_ch[1]} -o ${params.viromeQC_out}/report_file.txt --bowtie2_threads ${task.cpus} --diamond_threads ${task.cpus} -w ${params.samp_type}
     """
 
 }
