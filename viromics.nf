@@ -9,11 +9,11 @@ def helpMessage() {
         Usage:
         Run the workflow as follows:
 
-        nextflow run viromics.nf --pipeline "valid_pipeline_name" --fasta/illumina 'file.fasta/file(s).fq' 
+        nextflow run viromics.nf --pipeline "valid_pipeline_name" --fasta/reads 'file.fasta/file(s).fq' 
 
         Mandatory arguments:
          --pipeline                     Valid pipeline name                                                     [find_viruses/qc_classify]
-         --fasta/illumina               Contigs file in FASTA format / Illumina reads FASTQ format              ['file.fasta'/'basename_{1,2}.fastq']
+         --fasta/reads                  Contigs file in FASTA format /  reads FASTQ format              ['file.fasta'/'basename_{1,2}.fastq']
 
         Optional arguments:
          --result_dir                   Name of directory where the results from all analyses will be written.  [default : results]
@@ -41,7 +41,7 @@ log.info """\
          ===================================
          pipeline         : ${params.pipeline}
          result directory : ${params.result_dir}
-         fasta/illumina   : ${params.fasta}${params.illumina}
+         fasta/reads      : ${params.fasta}${params.reads}
          cpus             : ${params.cpus}
          """
          .stripIndent()
@@ -59,8 +59,8 @@ if (params.pipeline == ''){
   exit 1, "pipeline not specified, use [--pipeline] followed by a valid pipeline name: [find_viruses/qc_classify]"
 }
 
-if (params.fasta == '' &&  params.illumina == '' ) {
-  exit 1, "input files missing, use [--fasta] or [--illumina]"
+if (params.fasta == '' &&  params.reads == '' ) {
+  exit 1, "input files missing, use [--fasta] or [--reads]"
 
 }
 
@@ -170,9 +170,9 @@ workflow qc_classify {
   
     main:
     //..................
-    //..Illumina input..
+    //..Illumina reads input..
     //...................
-      illumina_input_ch = Channel.fromFilePairs(params.illumina, checkIfExists: true).view()
+      illumina_input_ch = Channel.fromFilePairs(params.reads, checkIfExists: true).view()
     
     //Download databases
       if (params.kaijudb) { kaiju_db = file(params.kaijudb) } 
@@ -198,9 +198,9 @@ workflow {
       find_viruses()}
     else if (params.pipeline == 'find_viruses'){exit 1, "the find_viruses pipeline requires a FASTA file, use [--fasta]"}
 
-    if (params.illumina != '' &&  params.pipeline == 'qc_classify') {
+    if (params.reads != '' &&  params.pipeline == 'qc_classify') {
       qc_classify()}
-    else if (params.pipeline == 'qc_classify'){exit 1, "the qc_classify pipeline requires a ILLUMINA file(S), use [--illumina]"}
+    else if (params.pipeline == 'qc_classify'){exit 1, "the qc_classify pipeline requires a ILLUMINA READ file(S), use [--reads]"}
 
 
 }
