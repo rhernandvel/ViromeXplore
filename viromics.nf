@@ -73,7 +73,7 @@ if (params.pipeline == ''){
   exit 1, "Invalid pipeline, please select a valid pipeline [find_viruses/qc_classify/host_prediction]"
 }
 
-if (params.fasta == '' &&  params.reads == '' ) {
+if (params.pipeline == 'find_viruses' || params.pipeline == 'qc_classify' && params.fasta == '' &&  params.reads == '' ) {
   exit 1, "input files missing, use [--fasta] or [--reads]"
 
 }
@@ -252,8 +252,12 @@ workflow {
 
     if (params.matrix != '' &&  params.phylogeny != '' &&  params.matrix != '' && params.pipeline == 'host_prediction'){
       host_prediction()
-    }else if (params.pipeline == 'host_prediction'){exit 1, "the host_prediction pipeline requires a ILLUMINA READ file(S), use [--reads]"}
-
+    }else if (params.pipeline == 'host_prediction'){exit 1, """
+    the host_prediction pipeline requires: 
+    an abundance TSV MATRIX, use        [--matrix]
+    a phylogeny in NEWIK format, use    [--phylogeny]
+    a host taxonomy TSV FILE, use       [--taxonomy]
+    """}
 
 }
 
