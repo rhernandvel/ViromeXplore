@@ -6,24 +6,36 @@ def helpMessage() {
   log.info """
                    VIRTOOLS - N F 
         ===================================
-        Usage:
+        USAGE:
         Run the workflow as follows:
 
         nextflow run viromics.nf --pipeline "valid_pipeline_name" --fasta/reads 'file.fasta/file(s).fq' 
 
-        Mandatory arguments:
+        MANDATORY ARGUMENTS:
          --pipeline                     Valid pipeline name                                                     [find_viruses/qc_classify]
-         --fasta/reads                  Contigs file in FASTA format /  reads FASTQ format              ['file.fasta'/'basename_{1,2}.fastq']
+         
+         For the find_viruses and qc_classify pieplines:
+         --fasta/reads                  Contigs file in FASTA format /  reads FASTQ format                  ['file.fasta'/'basename_{1,2}.fastq']
+         
+         For the host_prediction pipeline: 
+         --phylogeny                    Phylogenetic tree for the viruses being analyzed (NEWIK format)          [virus_phylogeny.nwk]
+         --taxonomy                     Lineage of host in NCBI terms (TAB DELIMITED file with ID and lineage)   [taxonomy_file.tsv]
+         --matrix                       Matrix containing the abundances of viruses and hosts  (TAB DELIMITED)   [matrix_abundances.tsv]
+                                            (Columns corresspond to taxa and rows to samples).
 
-        Optional arguments:
-         --result_dir                   Name of directory where the results from all analyses will be written.  [default : results]
-         --cpus                         Number of CPUs to use during job                                        [default : all available]
-         --memory                       Memory in GB to be asigned for the job                                  [default : 12 GB]
+        OPTIONAL ARGUMENTS:
+         --result_dir                   Name of directory where the results from all analyses will be written.    [default : results]
+         --cpus                         Number of CPUs to use during job                                          [default : all available]
+         --memory                       Memory in GB to be asigned for the job                                    [default : 12 GB]
          --help                         Help statement.
         
-        Pipelines:
+        PIPELINES:
          find_viruses       :      Pipeline for viral sequence identification and annotation                     (FASTA file required)
-         qc_classification  :      Pipeline to detect non-viral contamination and viral read classification      (ILLUMINA files required)
+         qc_classify        :      Pipeline to detect non-viral contamination and viral read classification      (ILLUMINA files required)
+         host_prediction    :      Pipeline to determine virus host pairs using co-ocurrence and phylogeny       (ABUNDANCE tsv matrix
+                                                                                                                  PHYlOGENY newik tree
+                                                                                                                  HOST TAXONOMY NCBI terms and host ID)
+
         """
 }
 
@@ -53,10 +65,12 @@ println "\n"
 ..Pipeline names..
 ..................
 */
-pipelines = ['find_viruses', 'qc_classify']
+pipelines = ['find_viruses', 'qc_classify', 'host_prediction']
 
 if (params.pipeline == ''){
-  exit 1, "pipeline not specified, use [--pipeline] followed by a valid pipeline name: [find_viruses/qc_classify]"
+  exit 1, "pipeline not specified, use [--pipeline] followed by a valid pipeline name: [find_viruses/qc_classify/host_prediction]"
+} else if(!pipelines.contains(params.pipeline)){
+  exit 1, "Invalid pipeline, please select a valid pipeline [find_viruses/qc_classify/host_prediction]"
 }
 
 if (params.fasta == '' &&  params.reads == '' ) {
@@ -191,6 +205,40 @@ workflow qc_classify {
         vQC_ch
 }
 
+/*
+......................................
+..HOST PREDICTION FROM CO-OCCURENCE ..
+......................................
+*/
+workflow host_prediction {
+  
+    main:
+    //..................
+    //..Files input..
+    //...................
+      matrix_input_ch = Channel.fromPath(params.matrix, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
+      phylum_input_ch = Channel.fromPath(params.phylogeny, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
+      taxonomy_input_ch = Channel.fromPath(params.genealogy, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
+    
+
+    //Download databases
+      if (params.kaijudb) { kaiju_db = file(params.kaijudb) } 
+      else {download_kaiju_db(); kaiju_db = download_kaiju_db.out }
+
+    //Run programs
+      vQC_ch = viromeQC(illumina_input_ch).view()
+      kaiju_ch=kaiju(illumina_input_ch, kaiju_db).view()
+      krona_ch=krona(kaiju_ch).view()
+
+
+    emit:
+        kaiju_db
+        kaiju_ch
+        krona_ch
+        vQC_ch
+}
+
+
 workflow {
   main:
 
@@ -201,6 +249,10 @@ workflow {
     if (params.reads != '' &&  params.pipeline == 'qc_classify') {
       qc_classify()}
     else if (params.pipeline == 'qc_classify'){exit 1, "the qc_classify pipeline requires a ILLUMINA READ file(S), use [--reads]"}
+
+    if (params.matrix != '' &&  params.phylogeny != '' &&  params.matrix != '' && params.pipeline == 'host_prediction'){
+      host_prediction()
+    }else if (params.pipeline == 'host_prediction'){exit 1, "the host_prediction pipeline requires a ILLUMINA READ file(S), use [--reads]"}
 
 
 }
