@@ -12,11 +12,14 @@ def helpMessage() {
         nextflow run viromics.nf --pipeline "valid_pipeline_name" --fasta/reads 'file.fasta/file(s).fq' 
 
         MANDATORY ARGUMENTS:
-         --pipeline                     Valid pipeline name                                                     [find_viruses/qc_classify]
+         --pipeline                     Valid pipeline name                                   [qc_classify/viral_assembly/find_viruses/host_prediction/annotate]
          
-         For the find_viruses and qc_classify pieplines:
-         --fasta/reads                  Contigs file in FASTA format /  reads FASTQ format                  ['file.fasta'/'basename_{1,2}.fastq']
+         For the qc_classify and viral_assembly pipelines:
+         --reads                  Reads FASTQ format                                                             ['basename_{1,2}.fastq']
          
+         For the find_viruses and annotate pipelines 
+         --fasta                        Contigs file in FASTA format                                             ['file.fasta']
+
          For the host_prediction pipeline: 
          --phylogeny                    Phylogenetic tree for the viruses being analyzed (NEWIK format)          [virus_phylogeny.nwk]
          --taxonomy                     Lineage of host in NCBI terms (TAB DELIMITED file with ID and lineage)   [taxonomy_file.tsv]
@@ -30,8 +33,8 @@ def helpMessage() {
          --help                         Help statement.
         
         PIPELINES:
-         find_viruses       :      Pipeline for viral sequence identification and annotation                     (FASTA file required)
          qc_classify        :      Pipeline to detect non-viral contamination and viral read classification      (ILLUMINA files required)
+         find_viruses       :      Pipeline for viral sequence identification and annotation                     (FASTA file required)
          host_prediction    :      Pipeline to determine virus host pairs using co-ocurrence and phylogeny       (ABUNDANCE tsv matrix
                                                                                                                   PHYlOGENY newik tree
                                                                                                                   HOST TAXONOMY NCBI terms and host ID)
@@ -53,7 +56,6 @@ log.info """\
          ===================================
          pipeline         : ${params.pipeline}
          result directory : ${params.result_dir}
-         fasta/reads      : ${params.fasta}${params.reads}
          cpus             : ${params.cpus}
          """
          .stripIndent()
@@ -65,19 +67,13 @@ println "\n"
 ..Pipeline names..
 ..................
 */
-pipelines = ['find_viruses', 'qc_classify', 'host_prediction']
+pipelines = ['qc_classify', 'viral_assembly', 'find_viruses', 'host_prediction']
 
 if (params.pipeline == ''){
-  exit 1, "pipeline not specified, use [--pipeline] followed by a valid pipeline name: [find_viruses/qc_classify/host_prediction]"
+  exit 1, "pipeline not specified, use [--pipeline] followed by a valid pipeline name: [qc_classify/viral_assembly/find_viruses/host_prediction]"
 } else if(!pipelines.contains(params.pipeline)){
-  exit 1, "Invalid pipeline, please select a valid pipeline [find_viruses/qc_classify/host_prediction]"
+  exit 1, "Invalid pipeline, please select a valid pipeline [qc_classify/viral_assembly/find_viruses/host_prediction]"
 }
-
-if (params.pipeline == 'find_viruses' || params.pipeline == 'qc_classify' && params.fasta == '' &&  params.reads == '' ) {
-  exit 1, "input files missing, use [--fasta] or [--reads]"
-
-}
-
 
 
 if (params.pipeline in pipelines){
@@ -104,6 +100,9 @@ include {virsorter2} from './nextflow/modules/virsorter2'
 include {checkv} from './nextflow/modules/checkv'
 include {viromeQC} from './nextflow/modules/viromeQC'
 include {kaiju} from './nextflow/modules/kaiju'
+include {FlashWeave} from './nextflow/modules/FlashWeave'
+include {fastp} from './nextflow/modules/fastp'
+include {megahit} from './nextflow/modules/megahit'
 
 //Databases
 include {virsorter_getDB} from './nextflow/modules/downloadvirsorterDB'
@@ -206,6 +205,31 @@ workflow qc_classify {
 }
 
 /*
+.............................
+..ASSEMBLY OF VIRAL CONTIGS..
+.............................
+*/
+
+workflow viral_assembly {
+  
+    main:
+    //..................
+    //..Illumina reads input..
+    //...................
+      illumina_input_ch = Channel.fromFilePairs(params.reads, checkIfExists: true).view()
+    
+
+    //Run programs
+      fastp_ch = fastp(illumina_input_ch).view()
+      megahit_ch = megahit(fastp_ch).view()
+
+
+    emit:
+        fastp_ch
+        megahit_ch
+}
+
+/*
 ......................................
 ..HOST PREDICTION FROM CO-OCCURENCE ..
 ......................................
@@ -218,24 +242,14 @@ workflow host_prediction {
     //...................
       matrix_input_ch = Channel.fromPath(params.matrix, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
       phylum_input_ch = Channel.fromPath(params.phylogeny, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
-      taxonomy_input_ch = Channel.fromPath(params.genealogy, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
-    
-
-    //Download databases
-      if (params.kaijudb) { kaiju_db = file(params.kaijudb) } 
-      else {download_kaiju_db(); kaiju_db = download_kaiju_db.out }
+      taxonomy_input_ch = Channel.fromPath(params.taxonomy, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
 
     //Run programs
-      vQC_ch = viromeQC(illumina_input_ch).view()
-      kaiju_ch=kaiju(illumina_input_ch, kaiju_db).view()
-      krona_ch=krona(kaiju_ch).view()
+      flashweave_qc = FlashWeave(matrix_input_ch).view()
 
 
     emit:
-        kaiju_db
-        kaiju_ch
-        krona_ch
-        vQC_ch
+      flashweave_qc
 }
 
 
@@ -249,6 +263,10 @@ workflow {
     if (params.reads != '' &&  params.pipeline == 'qc_classify') {
       qc_classify()}
     else if (params.pipeline == 'qc_classify'){exit 1, "the qc_classify pipeline requires a ILLUMINA READ file(S), use [--reads]"}
+
+    if (params.reads != '' &&  params.pipeline == 'viral_assembly') {
+      viral_assembly()}
+    else if (params.pipeline == 'viral_assembly'){exit 1, "the viral_assembly pipeline requires a ILLUMINA READ file(S), use [--reads]"}
 
     if (params.matrix != '' &&  params.phylogeny != '' &&  params.matrix != '' && params.pipeline == 'host_prediction'){
       host_prediction()
