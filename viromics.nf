@@ -9,7 +9,7 @@ def helpMessage() {
         USAGE:
         Run the workflow as follows:
 
-        nextflow run viromics.nf --pipeline "valid_pipeline_name" --fasta/reads 'file.fasta/file(s).fq' 
+        nextflow run viromics.nf --pipeline "valid_pipeline_name" --contigs/reads 'file.fasta/file(s).fq' 
 
         MANDATORY ARGUMENTS:
          --pipeline                     Valid pipeline name                                   [qc_classify/viral_assembly/find_viruses/host_prediction/annotate]
@@ -17,8 +17,12 @@ def helpMessage() {
          For the qc_classify and viral_assembly pipelines:
          --reads                  Reads FASTQ format                                                             ['basename_{1,2}.fastq']
          
+          For the  pipeline:
+         --reads                  Reads FASTQ format                                                             ['basename_{1,2}.fastq']
+         --contigs                
+
          For the find_viruses and annotate pipelines 
-         --fasta                        Contigs file in FASTA format                                             ['file.fasta']
+         --contigs                        Contigs file in FASTA format                                             ['file.fasta']
 
          For the host_prediction pipeline: 
          --phylogeny                    Phylogenetic tree for the viruses being analyzed (NEWIK format)          [virus_phylogeny.nwk]
@@ -153,7 +157,7 @@ workflow find_viruses {
     ..Contig input..
     ................
     */
-      contigs_input_ch = Channel.fromPath(params.fasta, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
+      contigs_input_ch = Channel.fromPath(params.contigs, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
     
     //Download databases
       if (params.checkvdb) { checkv_db = file(params.checkvdb) } 
@@ -256,9 +260,9 @@ workflow host_prediction {
 workflow {
   main:
 
-    if (params.fasta != '' &&  params.pipeline == 'find_viruses') {
+    if (params.contigs != '' &&  params.pipeline == 'find_viruses') {
       find_viruses()}
-    else if (params.pipeline == 'find_viruses'){exit 1, "the find_viruses pipeline requires a FASTA file, use [--fasta]"}
+    else if (params.pipeline == 'find_viruses'){exit 1, "the find_viruses pipeline requires a FASTA file, use [--contigs]"}
 
     if (params.reads != '' &&  params.pipeline == 'qc_classify') {
       qc_classify()}
@@ -282,7 +286,7 @@ workflow {
 //process runVirSorter2 {
 
 //    container="${params.virsorter2}"
-//    tag "Virsorter2 on $params.fasta"
+//    tag "Virsorter2 on $params.contigs"
 //    input:
 //    path contigs from params.fasta
     
