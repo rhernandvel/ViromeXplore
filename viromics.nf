@@ -15,14 +15,15 @@ def helpMessage() {
          --pipeline                     Valid pipeline name                                   [qc_classify/viral_assembly/find_viruses/host_prediction/annotate]
          
          For the qc_classify and viral_assembly pipelines:
-         --reads                  Reads FASTQ format                                                             ['basename_{1,2}.fastq']
+         --reads                        Reads FASTQ format                                                       ['basename_{1,2}.fastq']
          
-          For the  pipeline:
-         --reads                  Reads FASTQ format                                                             ['basename_{1,2}.fastq']
-         --contigs                
+         For the high_quality_genomes pipeline:
+         --reads                        Reads FASTQ format                                                       ['basename_{1,2}.fastq']
+         --contigs                      Contigs file in FASTA format from assembly                               ['file.fasta']
+         --contigs                      Viral classified contigs to extend                                       ['file.fasta']
 
          For the find_viruses and annotate pipelines 
-         --contigs                        Contigs file in FASTA format                                             ['file.fasta']
+         --contigs                      Contigs file in FASTA format                                             ['file.fasta']
 
          For the host_prediction pipeline: 
          --phylogeny                    Phylogenetic tree for the viruses being analyzed (NEWIK format)          [virus_phylogeny.nwk]
@@ -37,9 +38,12 @@ def helpMessage() {
          --help                         Help statement.
         
         PIPELINES:
-         qc_classify        :      Pipeline to detect non-viral contamination and viral read classification      (ILLUMINA files required)
-         find_viruses       :      Pipeline for viral sequence identification and annotation                     (FASTA file required)
-         host_prediction    :      Pipeline to determine virus host pairs using co-ocurrence and phylogeny       (ABUNDANCE tsv matrix
+         qc_classify          :      Pipeline to detect non-viral contamination and viral read classification     (ILLUMINA files required)
+         viral_assembly       :      Pipeline for virome read qc and assembly                                     (ILLUMINA files required)
+         find_viruses         :      Pipeline for viral sequence identification and annotation                    (FASTA file required)
+         high_quality_genomes :      Pipeline for obtaining viral contig abbundance and improving genomes         (FASTA file required
+                                                                                                                  ILLUMINA files required)
+         host_prediction      :      Pipeline to determine virus host pairs using co-ocurrence and phylogeny      (ABUNDANCE tsv matrix
                                                                                                                   PHYlOGENY newik tree
                                                                                                                   HOST TAXONOMY NCBI terms and host ID)
 
@@ -71,12 +75,12 @@ println "\n"
 ..Pipeline names..
 ..................
 */
-pipelines = ['qc_classify', 'viral_assembly', 'find_viruses', 'host_prediction']
+pipelines = ['qc_classify', 'viral_assembly', 'find_viruses', 'high_quality_genomes', 'host_prediction']
 
 if (params.pipeline == ''){
-  exit 1, "pipeline not specified, use [--pipeline] followed by a valid pipeline name: [qc_classify/viral_assembly/find_viruses/host_prediction]"
+  exit 1, "pipeline not specified, use [--pipeline] followed by a valid pipeline name: [qc_classify/viral_assembly/find_viruses/high_quality_genomes/host_prediction]"
 } else if(!pipelines.contains(params.pipeline)){
-  exit 1, "Invalid pipeline, please select a valid pipeline [qc_classify/viral_assembly/find_viruses/host_prediction]"
+  exit 1, "Invalid pipeline, please select a valid pipeline [qc_classify/viral_assembly/find_viruses/high_quality_genomes/host_prediction]"
 }
 
 
@@ -107,6 +111,10 @@ include {kaiju} from './nextflow/modules/kaiju'
 include {FlashWeave} from './nextflow/modules/FlashWeave'
 include {fastp} from './nextflow/modules/fastp'
 include {megahit} from './nextflow/modules/megahit'
+include {bowtie2} from './nextflow/modules/bowtie2'
+include {samtools} from './nextflow/modules/samtools'
+include {summarize} from './nextflow/modules/summarize'
+include {cobra} from './nextflow/modules/cobra'
 
 //Databases
 include {virsorter_getDB} from './nextflow/modules/downloadvirsorterDB'
@@ -176,6 +184,40 @@ workflow find_viruses {
         vs2_ch
         checkv_ch
 }
+
+
+/*
+..............................
+..HIGH QUALITY VIRAL GENOMES..
+..............................
+*/
+
+workflow high_quality_genomes {
+  
+    main:
+    //..............................................................
+    //.. Quality controlled illumina reads input and viral contigs..
+    //..............................................................
+      illumina_input_ch = Channel.fromFilePairs(params.reads, checkIfExists: true).view()
+      contigs_input_ch = Channel.fromPath(params.contigs, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
+      viral_contigs_ch = Channel.fromPath(params.viral_contigs, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
+
+    
+
+    //Run programs
+      bowtie_ch = bowtie2(viral_contigs_ch, illumina_input_ch).view()
+      samtools_ch = samtools(bowtie_ch).view()
+      summary_ch = summarize(samtools_ch).view()
+      cobra_ch = cobra(summary_ch, viral_contigs_ch, contigs_input_ch, samtools_ch).view()
+
+
+    emit:
+        bowtie_ch
+        samtools_ch
+        summary_ch
+        cobra_ch
+}
+
 
 /*
 ..............................
@@ -271,6 +313,15 @@ workflow {
     if (params.reads != '' &&  params.pipeline == 'viral_assembly') {
       viral_assembly()}
     else if (params.pipeline == 'viral_assembly'){exit 1, "the viral_assembly pipeline requires a ILLUMINA READ file(S), use [--reads]"}
+
+     if (params.contigs != '' && params.reads != '' && params.viral_contigs != '' && params.pipeline == 'high_quality_genomes') {
+      high_quality_genomes()}
+    else if (params.pipeline == 'high_quality_genomes'){exit 1, """
+    the viral_assembly pipeline requires:
+    ILLUMINA READ files, use [--reads]
+    an assembly contig FASTA file, use [--contigs] 
+    a viral contig FASTA file, use [--viral_contigs]
+    """}
 
     if (params.matrix != '' &&  params.phylogeny != '' &&  params.matrix != '' && params.pipeline == 'host_prediction'){
       host_prediction()
