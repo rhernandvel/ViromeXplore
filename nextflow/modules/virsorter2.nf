@@ -11,6 +11,6 @@ process virsorter2 {
 
     script:
     """    
-    virsorter run -w ${params.virsorter_output} -i ${contigs_input_ch} --min-length 1500 -j ${task.cpus} all --viral-gene-enrich-off --keep-original-seq --include-groups dsDNAphage,NCLDV,RNA,ssDNA,lavidaviridae --provirus-off 
+    virsorter run -w ${params.virsorter_output} -i ${contigs_input_ch} --min-length 1500 -j ${task.cpus} all --min-score 0.5 --keep-original-seq --include-groups dsDNAphage,NCLDV,RNA,ssDNA,lavidaviridae
     """
 }

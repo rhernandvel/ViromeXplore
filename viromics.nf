@@ -12,18 +12,22 @@ def helpMessage() {
         nextflow run viromics.nf --pipeline "valid_pipeline_name" --contigs/reads 'file.fasta/file(s).fq' 
 
         MANDATORY ARGUMENTS:
-         --pipeline                     Valid pipeline name                                   [qc_classify/viral_assembly/find_viruses/host_prediction/annotate]
+         --pipeline                     Valid pipeline name                   [qc_classify/viral_assembly/find_viruses/high_quality_genomes/taxonomy_annotation/host_prediction]
          
          For the qc_classify and viral_assembly pipelines:
          --reads                        Reads FASTQ format                                                       ['basename_{1,2}.fastq']
-         
-         For the high_quality_genomes pipeline:
-         --reads                        Reads FASTQ format                                                       ['basename_{1,2}.fastq']
-         --contigs                      Contigs file in FASTA format from assembly                               ['file.fasta']
-         --contigs                      Viral classified contigs to extend                                       ['file.fasta']
-
+        
          For the find_viruses and annotate pipelines 
          --contigs                      Contigs file in FASTA format                                             ['file.fasta']
+ 
+         For the high_quality_genomes pipeline:
+         --reads                        Reads FASTQ format                                                       ['basename_{1,2}.fastq']
+         --contigs                      Contigs file obatined from assembly                                      ['file.fasta']
+         --viral_contigs                Viral classified contigs or genomes to extend                            ['file.fasta']
+
+         For the taxonomy_annotation pipeline:
+         --viral_contigs                Viral classified contigs or genomes                                      ['file.fasta']
+
 
          For the host_prediction pipeline: 
          --phylogeny                    Phylogenetic tree for the viruses being analyzed (NEWIK format)          [virus_phylogeny.nwk]
@@ -40,9 +44,11 @@ def helpMessage() {
         PIPELINES:
          qc_classify          :      Pipeline to detect non-viral contamination and viral read classification     (ILLUMINA files required)
          viral_assembly       :      Pipeline for virome read qc and assembly                                     (ILLUMINA files required)
-         find_viruses         :      Pipeline for viral sequence identification and annotation                    (FASTA file required)
-         high_quality_genomes :      Pipeline for obtaining viral contig abbundance and improving genomes         (FASTA file required
+         find_viruses         :      Pipeline for viral sequence identification and annotation                    (FASTA contig file required)
+         high_quality_genomes :      Pipeline for obtaining viral contig abbundance and improving genomes         (FASTA contig file required,
+                                                                                                                  FASTA viral contig file required,
                                                                                                                   ILLUMINA files required)
+         taxonomy_annotation  :      Pipeline for asigning viral contigs/genomes taxonomy and gene annotations    (FASTA viral contig/genome file required)
          host_prediction      :      Pipeline to determine virus host pairs using co-ocurrence and phylogeny      (ABUNDANCE tsv matrix
                                                                                                                   PHYlOGENY newik tree
                                                                                                                   HOST TAXONOMY NCBI terms and host ID)
@@ -75,12 +81,12 @@ println "\n"
 ..Pipeline names..
 ..................
 */
-pipelines = ['qc_classify', 'viral_assembly', 'find_viruses', 'high_quality_genomes', 'host_prediction']
+pipelines = ['qc_classify', 'viral_assembly', 'find_viruses', 'high_quality_genomes', 'taxonomy_annotation', 'host_prediction']
 
 if (params.pipeline == ''){
-  exit 1, "pipeline not specified, use [--pipeline] followed by a valid pipeline name: [qc_classify/viral_assembly/find_viruses/high_quality_genomes/host_prediction]"
+  exit 1, "pipeline not specified, use [--pipeline] followed by a valid pipeline name: [qc_classify/viral_assembly/find_viruses/high_quality_genomes/taxonomy_annotation/host_prediction]"
 } else if(!pipelines.contains(params.pipeline)){
-  exit 1, "Invalid pipeline, please select a valid pipeline [qc_classify/viral_assembly/find_viruses/high_quality_genomes/host_prediction]"
+  exit 1, "Invalid pipeline, please select a valid pipeline [qc_classify/viral_assembly/find_viruses/high_quality_genomes/taxonomy_annotation/host_prediction]"
 }
 
 
@@ -108,18 +114,25 @@ include {virsorter2} from './nextflow/modules/virsorter2'
 include {checkv} from './nextflow/modules/checkv'
 include {viromeQC} from './nextflow/modules/viromeQC'
 include {kaiju} from './nextflow/modules/kaiju'
-include {FlashWeave} from './nextflow/modules/FlashWeave'
+//include {FlashWeave} from './nextflow/modules/FlashWeave'
 include {fastp} from './nextflow/modules/fastp'
 include {megahit} from './nextflow/modules/megahit'
 include {bowtie2} from './nextflow/modules/bowtie2'
 include {samtools} from './nextflow/modules/samtools'
 include {summarize} from './nextflow/modules/summarize'
 include {cobra} from './nextflow/modules/cobra'
+include {geNomad} from './nextflow/modules/geNomad'
+include {vsearch} from './nextflow/modules/vsearch'
+include {eggnog_mapper} from './nextflow/modules/eggnogmapper'
+include {cdhit} from './nextflow/modules/cdhit'
 
 //Databases
 include {virsorter_getDB} from './nextflow/modules/downloadvirsorterDB'
 include {checkv_getDB} from './nextflow/modules/downloadcheckvDB'
 include {kaiju_getDB} from './nextflow/modules/downloadkaijuDB'
+include {virushost_getDB} from './nextflow/modules/downloadvirushostDB'
+include {geNomad_getDB} from './nextflow/modules/downloadgeNomadDB'
+include {eggnog_getDB} from './nextflow/modules/downloadeggnogDB'
 
 //Visualization tools
 include {krona} from './nextflow/modules/krona_plot.nf'
@@ -146,6 +159,24 @@ workflow download_checkv_db {
 workflow download_kaiju_db {
     main:
         kaiju_getDB(); db = kaiju_getDB.out
+    emit: db    
+}
+
+workflow download_virushost_db {
+    main:
+        virushost_getDB(); db = virushost_getDB.out
+    emit: db    
+}
+
+workflow download_geNomad_db {
+    main:
+        geNomad_getDB(); db = geNomad_getDB.out
+    emit: db    
+}
+
+workflow download_eggnog_db {
+    main:
+        eggnog_getDB(); db = eggnog_getDB.out
     emit: db    
 }
 
@@ -176,6 +207,7 @@ workflow find_viruses {
 //        virsorter2(contigs_input_ch,virsorter_DB)
        vs2_ch = virsorter2(contigs_input_ch).view()
        checkv_ch = checkv(vs2_ch, checkv_db).view()
+       cdhit_ch = cdhit(checkv_ch).view()
        
         
 
@@ -183,6 +215,7 @@ workflow find_viruses {
         checkv_db
         vs2_ch
         checkv_ch
+        cdhit_ch
 }
 
 
@@ -205,7 +238,7 @@ workflow high_quality_genomes {
     
 
     //Run programs
-      bowtie_ch = bowtie2(viral_contigs_ch, illumina_input_ch).view()
+      bowtie_ch = bowtie2(contigs_input_ch, illumina_input_ch).view()
       samtools_ch = samtools(bowtie_ch).view()
       summary_ch = summarize(samtools_ch).view()
       cobra_ch = cobra(summary_ch, viral_contigs_ch, contigs_input_ch, samtools_ch).view()
@@ -218,6 +251,49 @@ workflow high_quality_genomes {
         cobra_ch
 }
 
+
+/*
+................................
+..TAXONOMY AND GENE ANNOTATION..
+................................
+*/
+
+workflow taxonomy_annotation {
+  
+    main:
+    //..............................................................
+    //.. Viral contigs or genomes as an input..
+    //..............................................................
+      viral_contigs_ch = Channel.fromPath(params.viral_contigs, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
+
+    //Download databases
+      if (params.virsorterdb) { virushost_db = file(params.virushostdb) } 
+      else {download_virushost_db(); virushost_db = download_virushost_db.out }
+
+      if (params.geNomaddb) { geNomad_db = file(params.geNomaddb) } 
+      else {download_geNomad_db(); geNomad_db = download_geNomad_db.out }
+
+      if (params.eggnogdb) { eggnog_db = file(params.eggnogdb) } 
+      else {download_eggnog_db(); eggnog_db = download_eggnog_db.out }
+      
+
+    //Run programs
+      geNomad_ch = geNomad(viral_contigs_ch, geNomad_db).view()
+      eggnog_mapper_ch=eggnog_mapper(geNomad_ch, eggnog_db).view()
+      vsearch_ch = vsearch(geNomad_ch, virushost_db).view()
+
+
+    emit:
+        virushost_db
+        geNomad_db
+        eggnog_db
+        geNomad_ch
+        eggnog_mapper
+        vsearch_ch
+
+
+
+}
 
 /*
 ..............................
@@ -320,8 +396,12 @@ workflow {
     the viral_assembly pipeline requires:
     ILLUMINA READ files, use [--reads]
     an assembly contig FASTA file, use [--contigs] 
-    a viral contig FASTA file, use [--viral_contigs]
+    a viral contig or genome FASTA file, use [--viral_contigs]
     """}
+
+    if (params.viral_contigs != '' &&  params.pipeline == 'taxonomy_annotation') {
+      taxonomy_annotation()}
+    else if (params.pipeline == 'taxonomy_annotation'){exit 1, "the taxonomy_annotation pipeline requires a viral contig or genome FASTA file, use [--viral_contigs]"}
 
     if (params.matrix != '' &&  params.phylogeny != '' &&  params.matrix != '' && params.pipeline == 'host_prediction'){
       host_prediction()
@@ -334,18 +414,4 @@ workflow {
 
 }
 
-//process runVirSorter2 {
-
-//    container="${params.virsorter2}"
-//    tag "Virsorter2 on $params.contigs"
-//    input:
-//    path contigs from params.fasta
-    
-//    output:
-//    publishDir "${params.virsorter_out}"
-    
-//    """
-//    virsorter run -w ${params.virsorter_out} -i $contigs --min-length 1500 -j ${params.threads} all
-//    """
-//    }
 
