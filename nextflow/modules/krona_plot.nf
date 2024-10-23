@@ -8,7 +8,6 @@ process krona {
 
     output:
     tuple val (name), path("${name}.html")
-    //file("${params.viromeQC_out}/report_file.txt")
 
     script:
     """    

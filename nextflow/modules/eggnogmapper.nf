@@ -13,6 +13,6 @@ process eggnog_mapper {
 
     script:
     """
-    emapper.py -i ${params.geNomad_out}/${name}_summary/${name}_virus_proteins.faa -o ${name}_eggnog.out --data_dir ${eggnog_data} --cpu 10
+    emapper.py -i ${params.geNomad_out}/${name}_summary/${name}_virus_proteins.faa -o ${name}_eggnog.out --data_dir ${eggnog_data} --cpu ${task.cpus}
     """
 }

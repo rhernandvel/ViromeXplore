@@ -13,6 +13,6 @@ process vsearch {
 
     script:
     """
-    vsearch --usearch_global ${params.geNomad_out}/${name}_summary/${name}_virus.fna --db ${virus_host_database} --id 0.95 --blast6out ${name}_vsearch_results.tsv
+    vsearch --usearch_global ${params.geNomad_out}/${name}_summary/${name}_virus.fna --db ${virus_host_database} --id 0.95 --blast6out ${name}_vsearch_results.tsv --threads ${task.cpus}
     """
 }

@@ -12,6 +12,6 @@ process megahit {
 
     script:
     """
-    megahit -1 ${name}_1.fastp.fq.gz -2 ${name}_2.fastp.fq.gz -o ${params.megahit_out} --k-list ${params.kmers_assembly}
+    megahit -1 ${name}_1.fastp.fq.gz -2 ${name}_2.fastp.fq.gz -o ${params.megahit_out} --k-list ${params.kmers_assembly} -t ${task.cpus}
     """
 }

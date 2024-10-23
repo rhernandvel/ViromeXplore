@@ -13,6 +13,6 @@ process geNomad {
 
     script:
     """
-    genomad end-to-end --threads 8 --cleanup --verbose ${viral_contigs_ch} ${params.geNomad_out} ${genomad_db}
+    genomad end-to-end --threads ${task.cpus} --cleanup --verbose ${viral_contigs_ch} ${params.geNomad_out} ${genomad_db}
     """
 }
