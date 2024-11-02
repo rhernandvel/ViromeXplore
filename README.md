@@ -4,6 +4,8 @@
 > "Nextflow workflows for the analysis and discovery of viral sequences from metagenomes and viromes"
 <br>
 
+![qiime2_logo](qiime2_logo.svg)
+
 **ViromeXplore** conatains a set of bioinformatic workflows that can be used reproducibly, sequentially and interoperably between them and with other workflows. It allows multiple input types mand starting points that include **raw reads**, **contigs**, **genomes**, **abbundance tables**, **phylogenies** and **taxonomies**.
 ViromeXplore contains the most varied and comprehensive workflows to explore viral genes and genomes from viromes and metagenomes to date. The future aim for ViromeXplore is to continue expanding the workflows and including the most recent and efficient tools.
 
