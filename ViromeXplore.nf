@@ -66,7 +66,7 @@ if (params.help) {
 println "\n"
 
 log.info """\
-                    VIRTOOLS - N F     
+                    ViromeXplore     
          ===================================
          pipeline         : ${params.pipeline}
          result directory : ${params.result_dir}
@@ -363,7 +363,7 @@ workflow host_prediction {
     //..Files input..
     //...................
       matrix_input_ch = Channel.fromPath(params.matrix, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
-      phylum_input_ch = Channel.fromPath(params.phylogeny, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
+      phylogeny_input_ch = Channel.fromPath(params.phylogeny, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
       taxonomy_input_ch = Channel.fromPath(params.taxonomy, checkIfExists: true).map{file -> tuple(file.simpleName, file)}.view()
 
     //Run programs

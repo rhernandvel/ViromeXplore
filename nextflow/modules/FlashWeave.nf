@@ -11,7 +11,7 @@ process FlashWeave {
 
     script:
     """
-    mkdir ${params.flashweave_out}
+    mkdir -p ${params.flashweave_out}
     run_flashweave.jl --input ${matrix_input_ch} -output ${params.flashweave_out}/flashweave_result.tsv
     """
 
