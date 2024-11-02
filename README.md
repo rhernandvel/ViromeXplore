@@ -85,6 +85,13 @@ Containers are available for all processes. To launch a run, use Singularity (de
 - For Docker: use `-profile docker`
 - For Singularity: use `-profile singularity`
 
+Depending on the cluster system it is also possible to use slurm in the profile which enables the user to configure the resources for each step. For this the user should modify the **`config/local.config`** file and run the profile as follows:
+
+`-profile singularity,slurm`
+`-profile docker,slurm`
+
+
+
 Include the selected profile option when running the workflow script.
 
 
