@@ -1,5 +1,6 @@
 process checkv_getDB {    
     storeDir "${params.databases}/checkv" 
+    label "checkv_db"
 
     output:
         path("checkV_db.qza", type: 'dir')
