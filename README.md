@@ -1,5 +1,12 @@
 ![Logo](ViromeXplore_logo.jpg)
 <br>
+
+![qiime2_logo](qiime2_logo.svg)
+This version of the workflows use the QIIME2 plugin [**q2-viromics**](https://github.com/bokulich-lab/q2-viromics), it generates qiime2 artifacts that can be further analyzed and visualized using other qiime2 plugins such as [**q2-moshpit**](https://github.com/bokulich-lab/q2-moshpit) or [**q2-vizard**](https://github.com/qiime2/q2-vizard).
+[QIIME2](https://www.nature.com/articles/s41587-019-0209-9) is the most widely used software for microbiome analysis, to learn more about it please check the [documentation](https://qiime2.org/).
+
+<br>
+
 # ViromeXplore
 > "Nextflow workflows for the analysis and discovery of viral sequences from metagenomes and viromes"
 <br>

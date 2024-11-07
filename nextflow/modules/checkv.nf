@@ -13,6 +13,7 @@ process checkv {
 
     script:
     """
-    checkv end_to_end ${fasta} ${params.checkv_out} -t ${task.cpus} -d ${database}
+    qiime tools import --type 'FeatureData[Sequence]' --input-path ${fasta} --output-path ${name}_sequences.qza
+    qiime viromics checkv-analysis --i-sequences ${name}_sequences.qza --i-database ${database} --p-num-threads ${task.cpus} --output-dir ${params.checkv_out} --verbose
     """
 }
