@@ -22,7 +22,7 @@ ViromeXplore contains the following workflows that can be used in different comb
 
 A detailed representation of the workflows is shown in the diagram below.
 
-![Workflows](Workflows.jpeg)
+![Workflows](Workflows.svg)
 <br>
 
 ## :floppy_disk: Installation
