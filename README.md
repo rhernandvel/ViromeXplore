@@ -67,13 +67,13 @@ singularity --version
 Run the workflows as follows:
 
 ```bash
-nextflow ViromeXplore.nf --pipeline qc_classify --reads basename_{1,2}.fastq
+nextflow ViromeXplore.nf --pipeline qc_classify --reads "basename_{1,2}.fastq"
 
-nextflow ViromeXplore.nf --pipeline viral_assembly --reads basename_{1,2}.fastq
+nextflow ViromeXplore.nf --pipeline viral_assembly --reads "basename_{1,2}.fastq"
 
 nextflow ViromeXplore.nf --pipeline find_viruses --contigs contigs.fasta
 
-nextflow ViromeXplore.nf --pipeline high_quality_genomes --reads basename_{1,2}.fastq --contigs contigs.fasta --viral_contigs viral_contigs.fasta
+nextflow ViromeXplore.nf --pipeline high_quality_genomes --reads "basename_{1,2}.fastq" --contigs contigs.fasta --viral_contigs viral_contigs.fasta
 
 nextflow ViromeXplore.nf --pipeline taxonomy_annotation --viral_contigs viral_contigs_or_genomes.fasta
 
