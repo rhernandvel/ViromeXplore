@@ -9,7 +9,7 @@ def helpMessage() {
         USAGE:
         Run the workflow as follows:
 
-        nextflow run viromics.nf --pipeline "valid_pipeline_name" --contigs/reads 'file.fasta/file(s).fq' 
+        nextflow ViromeXplore.nf --pipeline "valid_pipeline_name" --contigs/reads 'file.fasta/file(s).fq' 
 
         MANDATORY ARGUMENTS:
          --pipeline                     Valid pipeline name                   [qc_classify/viral_assembly/find_viruses/high_quality_genomes/taxonomy_annotation/host_prediction]
