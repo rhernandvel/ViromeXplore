@@ -1,0 +1,137 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting &mdash; ViromeXplore  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ViromeXplore
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="workflow_overview.html">Workflow Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial: Analyzing a Virome Dataset with ViromeXplore</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ViromeXplore</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/troubleshooting.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
+<section id="singularity-docker-container-download-issues">
+<h2>Singularity/Docker Container Download Issues<a class="headerlink" href="#singularity-docker-container-download-issues" title="Link to this heading"></a></h2>
+<p>Sometimes the default directory used by Singularity to store downloaded container images has limited space.
+To resolve this, it’s recommended to set the environment variable <cite>SINGULARITY_CACHEDIR</cite> to a directory with more available storage.</p>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">SINGULARITY_CACHEDIR</span><span class="o">=</span>/path/to/large/disk
+</pre></div>
+</div>
+</section>
+<section id="only-forward-reads-are-passed-to-workflows">
+<h2>Only Forward Reads Are Passed to Workflows<a class="headerlink" href="#only-forward-reads-are-passed-to-workflows" title="Link to this heading"></a></h2>
+<p>This typically occurs when quotation marks are missing from the <cite>–reads</cite> parameter in your Nextflow command.
+Make sure to enclose the regular expression in quotes.</p>
+<p>Correct usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nextflow<span class="w"> </span>ViromeXplore.nf<span class="w"> </span>--pipeline<span class="w"> </span>qc_classify<span class="w"> </span>--reads<span class="w"> </span><span class="s2">&quot;basename_{1,2}.fastq&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="input-file-naming">
+<h2>Input File Naming<a class="headerlink" href="#input-file-naming" title="Link to this heading"></a></h2>
+<p>Some tools automatically generate directories and output files based on input filenames.
+To avoid unexpected behavior, it’s best to avoid using dots (<cite>.</cite>) in filenames except for the extension.</p>
+<p><strong>Recommended:</strong></p>
+<ul class="simple">
+<li><p>✅ <cite>sample1.fastq</cite></p></li>
+<li><p>✅ <cite>demo_SRR829034_1.fastq</cite></p></li>
+</ul>
+<p><strong>Avoid:</strong></p>
+<ul class="simple">
+<li><p>❌ <cite>sample.v1.fastq</cite></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, rhernandvel.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
