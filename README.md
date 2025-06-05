@@ -11,7 +11,7 @@ The workflows are implemented in [Nextflow](https://www.nextflow.io/), and addit
 
 ## :books: Tutorial Available
 
-You can find a complete **tutorial** on our [Read the Docs site](https://viromexplore.readthedocs.io).
+You can find the complete *documentation* and a **tutorial** on our [Read the Docs site](https://viromexplore.readthedocs.io).
 
 The tutorial includes:
 
