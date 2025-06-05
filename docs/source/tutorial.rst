@@ -127,7 +127,7 @@ Directory structure
 
 Each pipeline step creates its own directory, keeping the workflow organized and reproducible, for example:
 
-.. code-block:: text
+::
 
    results/
    │

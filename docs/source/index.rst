@@ -20,7 +20,9 @@ Source code is available on `Github <https://github.com/rhernandvel/ViromeXplore
    :maxdepth: 2
    :caption: Contents:
 
+   installation
    workflow_overview
+   running_viromexplore
    tutorial
    troubleshooting
    
