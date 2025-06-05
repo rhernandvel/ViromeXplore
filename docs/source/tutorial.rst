@@ -38,6 +38,7 @@ Assemble the viral reads:
 `View interactive  plot <_static/demo_SRR829034_fastp.html>`_
 
 The fatsp report shows that the Q30 of most bases was above 30 so no reads were removed.
+
 .. image:: _static/demo_fastp.png
    :alt: quality plot
    :width: 600px
