@@ -36,8 +36,7 @@ A detailed representation of the workflows is shown in the diagram below.
 <br>
 
 ## :floppy_disk: Installation
-
-The workflows require [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html) and either [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html) (default) or [Docker](https://docs.docker.com/get-docker/) to be executed. To install this software, use the commands below. Alternatively, they can be installed using Conda, although this method is not recommended.
+The workflows are implemented in [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html) and either [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html) (default) or [Docker](https://docs.docker.com/get-docker/) to be executed. To install this software, use the commands below. 
 
 ### Install Nextflow and Singularity using Conda
 ```bash
