@@ -9,9 +9,9 @@ ViromeXplore contains the most varied and comprehensive workflows to explore vir
 
 The workflows are implemented in [Nextflow](https://www.nextflow.io/), and additionally only [Docker](https://www.docker.com/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/quick_start.html) are needed to run ViromeXplore. Installation and usage details are provided below.
 
-## :books: Tutorial Available
+## :books: Dcoumentation and Tutorial 
 
-You can find the complete *documentation* and a **tutorial** on our [Read the Docs site](https://viromexplore.readthedocs.io).
+You can find the complete **documentation** and a **tutorial** on our [Read the Docs site](https://viromexplore.readthedocs.io).
 
 The tutorial includes:
 
@@ -39,8 +39,15 @@ A detailed representation of the workflows is shown in the diagram below.
 
 The workflows require [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html) and either [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html) (default) or [Docker](https://docs.docker.com/get-docker/) to be executed. To install this software, use the commands below. Alternatively, they can be installed using Conda, although this method is not recommended.
 
+### Install Nextflow and Singularity using Conda
+```bash
+conda create -n ViromeXplore-env -c conda-forge -c bioconda singularity nextflow
+```
 
-### 1. Install Nextflow
+Alternatively, if you **have root access**, you can install Nextflow, Singularity, and Docker manually using system-level commands as shown below.
+
+
+### Install Nextflow
 ```bash
 curl -s https://get.nextflow.io | bash
 sudo mv nextflow /usr/local/bin/
