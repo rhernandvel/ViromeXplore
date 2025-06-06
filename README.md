@@ -9,7 +9,7 @@ ViromeXplore contains the most varied and comprehensive workflows to explore vir
 
 The workflows are implemented in [Nextflow](https://www.nextflow.io/), and additionally only [Docker](https://www.docker.com/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/quick_start.html) are needed to run ViromeXplore. Installation and usage details are provided below.
 
-## :books: Dcoumentation and Tutorial 
+## :books: Documentation and Tutorial 
 
 You can find the complete **documentation** and a **tutorial** on our [Read the Docs site](https://viromexplore.readthedocs.io).
 
