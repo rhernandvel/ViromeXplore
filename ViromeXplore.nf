@@ -4,7 +4,7 @@ params.help = false
 
 def helpMessage() {
   log.info """
-                   VIRTOOLS - N F 
+                    ViromeXplore
         ===================================
         USAGE:
         Run the workflow as follows:
