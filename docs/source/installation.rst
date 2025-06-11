@@ -62,6 +62,16 @@ Install Singularity
    singularity --version
 
 
+Download the Github repository
+^^^^^^^^^^^^^^^^^^^
+.. code-block:: bash
+
+   git clone https://github.com/rhernandvel/ViromeXplore.git
+   
+   cd ViromeXplore 
+
+**ViromeXplore.nf** is the main file which is needed to run the workflows as shown in the `Running ViromeXplore <https://viromexplore.readthedocs.io/en/latest/running_viromexplore.html#>`_ section.
+
 System Requirements
 -----------------------
 
