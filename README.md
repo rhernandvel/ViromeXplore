@@ -75,6 +75,13 @@ cd singularity
 singularity --version
 ```
 
+### Download this Github repo
+```bash
+git clone https://github.com/rhernandvel/ViromeXplore.git
+
+cd ViromeXplore
+```
+
 ## :computer: Running ViromeXplore
 ### Running the workflows
 
