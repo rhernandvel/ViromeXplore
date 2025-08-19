@@ -92,6 +92,37 @@ Optional Arguments
 - ``--help``  
   Display help message.
 
+Custom Database Arguments
+-------------------------
+
+By default, ViromeXplore uses bundled reference databases.  
+However, users may specify **custom databases** for the following tools:
+
+- ``--virsorterdb``  
+  Custom VirSorter2 database path.
+
+- ``--checkvdb``  
+  Custom CheckV database path.
+
+- ``--kaijudb``  
+  Custom Kaiju database path.
+
+- ``--virushostdb``  
+  Custom virus-host database path.
+
+- ``--genomaddb``  
+  Custom geNomad database path.
+
+- ``--eggnogdb``  
+  Custom EggNOG database path.
+
+.. note::
+
+   All parameters (including defaults and database locations)  
+   are defined in the ``nextflow.config`` file.  
+   Users may edit this file directly or override parameters via the command line.
+
+
 Available Pipelines
 -------------------
 
