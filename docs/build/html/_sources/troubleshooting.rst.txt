@@ -13,6 +13,39 @@ Example:
 
    export SINGULARITY_CACHEDIR=/path/to/large/disk
 
+
+When using an HPC system, compute nodes often do **not** have internet access, unlike login nodes.  
+In such cases, container images (Docker or Singularity) may need to be downloaded manually.  
+
+If the container images cannot be pulled automatically, you can fetch them in advance using commands like:
+
+.. code-block:: bash
+
+   # For Singularity
+   singularity pull docker://<image_name>:<tag>
+
+   # For Docker
+   docker pull <image_name>:<tag>
+
+.. note::
+
+   It is **not necessary** to download all container images.  
+   Only those used by the pipeline(s) of interest need to be fetched.  
+
+The list of images currently used in the latest release can be found in the 
+``containers.config`` file `on GitHub <https://github.com/rhernandvel/ViromeXplore/blob/master/nextflow/config/containers.config>`_
+
+For example: to manually download the VirSorter2 container (version 2.2.3):
+
+.. code-block:: bash
+
+   # Singularity
+   singularity pull docker://jiarong/virsorter:2.2.3
+
+   # Docker
+   docker pull jiarong/virsorter:2.2.3
+
+
 Only Forward Reads Are Passed to Workflows
 ------------------------------------------
 

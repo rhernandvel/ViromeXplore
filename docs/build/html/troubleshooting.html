@@ -89,6 +89,31 @@ To resolve this, it’s recommended to set the environment variable <cite>SINGUL
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">SINGULARITY_CACHEDIR</span><span class="o">=</span>/path/to/large/disk
 </pre></div>
 </div>
+<p>When using an HPC system, compute nodes often do <strong>not</strong> have internet access, unlike login nodes.
+In such cases, container images (Docker or Singularity) may need to be downloaded manually.</p>
+<p>If the container images cannot be pulled automatically, you can fetch them in advance using commands like:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># For Singularity</span>
+singularity<span class="w"> </span>pull<span class="w"> </span>docker://&lt;image_name&gt;:&lt;tag&gt;
+
+<span class="c1"># For Docker</span>
+docker<span class="w"> </span>pull<span class="w"> </span>&lt;image_name&gt;:&lt;tag&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is <strong>not necessary</strong> to download all container images.
+Only those used by the pipeline(s) of interest need to be fetched.</p>
+</div>
+<p>The list of images currently used in the latest release can be found in the
+<code class="docutils literal notranslate"><span class="pre">containers.config</span></code> file <a class="reference external" href="https://github.com/rhernandvel/ViromeXplore/blob/master/nextflow/config/containers.config">on GitHub</a></p>
+<p>For example: to manually download the VirSorter2 container (version 2.2.3):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Singularity</span>
+singularity<span class="w"> </span>pull<span class="w"> </span>docker://jiarong/virsorter:2.2.3
+
+<span class="c1"># Docker</span>
+docker<span class="w"> </span>pull<span class="w"> </span>jiarong/virsorter:2.2.3
+</pre></div>
+</div>
 </section>
 <section id="only-forward-reads-are-passed-to-workflows">
 <h2>Only Forward Reads Are Passed to Workflows<a class="headerlink" href="#only-forward-reads-are-passed-to-workflows" title="Link to this heading"></a></h2>
