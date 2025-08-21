@@ -92,6 +92,50 @@ Optional Arguments
 - ``--help``  
   Display help message.
 
+- ``--workdir``  
+  Work directory for nextflow.
+  *Default: work*
+
+Tool-Specific Parameters
+------------------------
+
+**ViromeQC**
+
+- ``samp_type``  
+  Sample type.  
+  *Default: ``environmental``*
+
+**VirSorter2**
+
+- ``virsorter_minlength``  
+  Minimum contig length to keep.  
+  *Default: ``1500``*
+
+**Fastp**
+
+- ``phred_quality``  
+  Minimum phred quality score for filtering.  
+  *Default: ``30``*
+
+**MEGAHIT**
+
+- ``kmers_assembly``  
+  K-mer sizes to use for assembly.  
+  *Default: ``21,35,49,63,77,91,105,119,127``*
+
+**COBRA**
+
+- ``cobra_assembly``  
+  Assembly method used.  
+  *Default: ``megahit``*
+
+- ``min_kmer``  
+  Minimum k-mer size.  
+  *Default: ``21``*
+
+- ``max_kmer``  
+  Maximum k-mer size.  
+  *Default: ``127``*
 Custom Database Arguments
 -------------------------
 

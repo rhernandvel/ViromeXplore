@@ -50,12 +50,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#running-the-workflows">Running the Workflows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mandatory-arguments">Mandatory Arguments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tool-specific-parameters">Tool-Specific Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#custom-database-arguments">Custom Database Arguments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#available-pipelines">Available Pipelines</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial: Analyzing a Virome Dataset with ViromeXplore</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools_databases.html">Tools and Databases</a></li>
 </ul>
 
         </div>
@@ -166,6 +168,48 @@ Memory (in GB) to allocate.
 <em>Default: 12 GB</em></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--help</span></code>
 Display help message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--workdir</span></code>
+Work directory for nextflow.
+<em>Default: work</em></p></li>
+</ul>
+</section>
+<section id="tool-specific-parameters">
+<h2>Tool-Specific Parameters<a class="headerlink" href="#tool-specific-parameters" title="Link to this heading"></a></h2>
+<p><strong>ViromeQC</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">samp_type</span></code>
+Sample type.
+<em>Default: ``environmental``</em></p></li>
+</ul>
+<p><strong>VirSorter2</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">virsorter_minlength</span></code>
+Minimum contig length to keep.
+<em>Default: ``1500``</em></p></li>
+</ul>
+<p><strong>Fastp</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">phred_quality</span></code>
+Minimum phred quality score for filtering.
+<em>Default: ``30``</em></p></li>
+</ul>
+<p><strong>MEGAHIT</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">kmers_assembly</span></code>
+K-mer sizes to use for assembly.
+<em>Default: ``21,35,49,63,77,91,105,119,127``</em></p></li>
+</ul>
+<p><strong>COBRA</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cobra_assembly</span></code>
+Assembly method used.
+<em>Default: ``megahit``</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min_kmer</span></code>
+Minimum k-mer size.
+<em>Default: ``21``</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_kmer</span></code>
+Maximum k-mer size.
+<em>Default: ``127``</em></p></li>
 </ul>
 </section>
 <section id="custom-database-arguments">
