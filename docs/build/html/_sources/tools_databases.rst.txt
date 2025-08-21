@@ -36,7 +36,7 @@ ViromeXplore uses the following versions of the bioinformatics tools:
      - Interactive hierarchical visualization of metagenomic data.
      - `Github <https://github.com/marbl/Krona/wiki>`__
    * - FlashWeave
-     - 1.6
+     - 0.19.2
      - Infers microbial interaction networks from sequencing data.
      - `GitHub <https://github.com/meringlab/FlashWeave>`__
    * - TIM
