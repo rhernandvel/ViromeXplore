@@ -6,6 +6,8 @@ def helpMessage() {
   log.info """
                     ViromeXplore
         ===================================
+        Version: 1.0.0
+
         USAGE:
         Run the workflow as follows:
 

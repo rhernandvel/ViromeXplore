@@ -11,6 +11,6 @@ process virsorter2 {
 
     script:
     """    
-    virsorter run -w ${params.virsorter_output} -i ${contigs_input_ch} --min-length 1500 -j ${task.cpus} all --min-score 0.5 --keep-original-seq --seqname-suffix-off --include-groups dsDNAphage,NCLDV,RNA,ssDNA,lavidaviridae
+    virsorter run -w ${params.virsorter_output} -i ${contigs_input_ch} --min-length ${virsorter_minlength) -j ${task.cpus} all --min-score 0.5 --keep-original-seq --seqname-suffix-off --include-groups dsDNAphage,NCLDV,RNA,ssDNA,lavidaviridae
     """
 }
