@@ -201,5 +201,16 @@ Include the selected profile option when running the workflow script.
   Pipeline to determine virus-host pairs using co-occurrence and phylogeny.  
   *(ABUNDANCE tsv matrix, PHYLOGENY newick tree, HOST TAXONOMY NCBI terms and host ID required)*
 
+---
+
+## 🧭 Tutorial: Using the Demo Data
+
+A step-by-step tutorial demonstrating how to use **ViromeXplore** with the included demo dataset is available in the official documentation:
+
+🔗 [View the Tutorial on Read the Docs](https://viromexplore.readthedocs.io/en/latest/tutorial.html)
+
+---
+
+
 ## ✒️ Citing ViromeXplore
 If you have used the ViromeXplore please consider citing:
