@@ -214,3 +214,5 @@ A step-by-step tutorial demonstrating how to use **ViromeXplore** with the inclu
 
 ## ✒️ Citing ViromeXplore
 If you have used the ViromeXplore please consider citing:
+
+Rodrigo Hernández-Velázquez, Michal Ziemski, Nicholas A Bokulich, ViromeXplore: integrative workflows for complete and reproducible virome characterization, Briefings in Bioinformatics, Volume 26, Issue 6, November 2025, bbaf638, https://doi.org/10.1093/bib/bbaf638
